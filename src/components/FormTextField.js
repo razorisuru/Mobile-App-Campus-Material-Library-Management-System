@@ -20,15 +20,13 @@ const styles = StyleSheet.create({
     fontWeight: 500,
   },
   textInput: {
-    backgroundColor: "#f9f9f9",
-    borderWidth: 1,
-    borderColor: "black",
-    borderRadius: 5,
-    padding: 10,
-    margin: 10,
+    flex: 1,
+    fontSize: 16,
+    color: "#000",
   },
   error: {
     color: "red",
-    marginTop: 1, 
+    fontSize: 14,
+    marginBottom: -20,
   },
 });
