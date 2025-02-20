@@ -108,7 +108,7 @@ export default function ({ navigation }) {
         />
       </View>
       <View style={[styles.inputContainer,
-          errors.password_confirmation && styles.errorInputContainer,]}>
+          errors.password && styles.errorInputContainer,]}>
         <FontAwesome
           name="lock"
           size={20}
@@ -120,7 +120,7 @@ export default function ({ navigation }) {
           value={passwordConfirmation}
           onChangeText={(text) => setPasswordConfirmation(text)}
           secureTextEntry={true}
-          errors={errors.password_confirmation}
+          errors={errors.password}
           placeholder="Password Confirmation"
         />
       </View>
