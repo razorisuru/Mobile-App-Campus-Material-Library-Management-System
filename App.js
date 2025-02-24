@@ -41,17 +41,17 @@ export default function App() {
   return (
     <AuthContext.Provider value={{ user, setUser }}>
       <NavigationContainer >
-        <Stack.Navigator  >
+        <Stack.Navigator  screenOptions={{ headerShown: false }}>
           {user ? (
             <>
-              <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
+              <Stack.Screen name="Home" component={HomeScreen} />
             </>
           ) : (
             <>
               {/* <Stack.Screen name="Register" component={RegisterScreen} options={{headerShown: false}}/> */}
-              <Stack.Screen name="Welcome" component={WelcomeScreen} options={{headerShown: false}}/>
-              <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
-              <Stack.Screen name="Register" component={RegisterScreen} options={{headerShown: false}}/>
+              <Stack.Screen name="Welcome" component={WelcomeScreen} />
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="Register" component={RegisterScreen} />
             </>
           )}
           {/* <Stack.Screen name="Register" component={LoginScreen} /> */}
