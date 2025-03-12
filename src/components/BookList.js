@@ -6,11 +6,13 @@ const BookList = ({ data }) => {
     <TouchableOpacity style={styles.bookItem}>
       <View style={styles.bookImageContainer}>
         <View style={styles.imagePlaceholder}>
-          <Image source={{ uri: `http://192.168.8.102:8000/storage/${item.cover_image}`}}  style={styles.placeholderImage} />
+          <Image source={{ uri: `http://192.168.8.114:8000/storage/${item.cover_image}`}}  style={styles.placeholderImage} />
         </View>
       </View>
       <View style={styles.bookInfo}>
-        <Text style={styles.bookCategory}>{item.categories.name}</Text>
+      <Text style={styles.bookCategory}>
+          {item.categories.map((category) => category.name).join(', ')}
+        </Text>
         <Text style={styles.bookTitle}>{item.title}</Text>
         <Text style={styles.bookAuthor}>{item.author}</Text>
       </View>
