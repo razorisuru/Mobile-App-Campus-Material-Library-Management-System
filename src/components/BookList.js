@@ -1,17 +1,26 @@
 import React from "react";
 import { FlatList, TouchableOpacity, View, Text, Image, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const BookList = ({ data }) => {
+  const navigation = useNavigation();
+
   const renderBookItem = ({ item }) => (
-    <TouchableOpacity style={styles.bookItem}>
+    <TouchableOpacity
+      style={styles.bookItem}
+      onPress={() => navigation.navigate("BookDetail", { book: item })}
+    >
       <View style={styles.bookImageContainer}>
         <View style={styles.imagePlaceholder}>
-          <Image source={{ uri: `http://192.168.8.114:8000/storage/${item.cover_image}`}}  style={styles.placeholderImage} />
+          <Image
+            source={{ uri: `http://192.168.8.114:8000/storage/${item.cover_image}` }}
+            style={styles.placeholderImage}
+          />
         </View>
       </View>
       <View style={styles.bookInfo}>
-      <Text style={styles.bookCategory}>
-          {item.categories.map((category) => category.name).join(', ')}
+        <Text style={styles.bookCategory}>
+          {item.categories.map((category) => category.name).join(", ")}
         </Text>
         <Text style={styles.bookTitle}>{item.title}</Text>
         <Text style={styles.bookAuthor}>{item.author}</Text>
@@ -26,7 +35,7 @@ const BookList = ({ data }) => {
     <FlatList
       data={data}
       renderItem={renderBookItem}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.id.toString()}
       showsVerticalScrollIndicator={false}
       style={styles.booksList}
     />
@@ -57,7 +66,6 @@ const styles = StyleSheet.create({
   placeholderImage: {
     width: 70,
     height: 70,
-    // tintColor: "#AAAAAA",
   },
   bookInfo: {
     flex: 1,
