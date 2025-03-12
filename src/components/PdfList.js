@@ -6,8 +6,8 @@ const PdfList = ({ data }) => {
     <TouchableOpacity style={styles.pdfCard}>
       <View style={styles.pdfImageContainer}>
         <View style={styles.imagePlaceholder}>
-          {/* <Image source={item.image} style={styles.placeholderImage} /> */}
-          <Text >{item.description}</Text>
+          <Image source={require("../../assets/placeholder.jpg")} style={styles.placeholderImage} />
+          {/* <Text >{item.description}</Text> */}
         </View>
       </View>
       <Text style={styles.pdfTitle}>{item.name}</Text>

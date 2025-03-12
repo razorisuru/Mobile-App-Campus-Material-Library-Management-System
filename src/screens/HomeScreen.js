@@ -50,7 +50,7 @@ const booksData = [
   },
 ];
 
-const ReadingApp = () => {
+const HomeScreen = () => {
   const { user, setUser } = useContext(AuthContext);
 
   async function handleLogout() {
@@ -235,4 +235,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReadingApp;
+export default HomeScreen;
