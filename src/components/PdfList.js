@@ -6,10 +6,11 @@ const PdfList = ({ data }) => {
     <TouchableOpacity style={styles.pdfCard}>
       <View style={styles.pdfImageContainer}>
         <View style={styles.imagePlaceholder}>
-          <Image source={item.image} style={styles.placeholderImage} />
+          {/* <Image source={item.image} style={styles.placeholderImage} /> */}
+          <Text >{item.description}</Text>
         </View>
       </View>
-      <Text style={styles.pdfTitle}>{item.title}</Text>
+      <Text style={styles.pdfTitle}>{item.name}</Text>
     </TouchableOpacity>
   );
 
@@ -32,13 +33,13 @@ const styles = StyleSheet.create({
   pdfCard: {
     marginLeft: 15,
     marginRight: 5,
-    width: 125,
+    width: 100,
     borderRadius: 10,
     backgroundColor: "#FFFFFF",
     overflow: "hidden",
   },
   pdfImageContainer: {
-    height: 100,
+    height: 80,
     backgroundColor: "#E5E5E5",
   },
   pdfTitle: {

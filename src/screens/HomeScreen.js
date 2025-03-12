@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,9 @@ import {
   SafeAreaView,
   StatusBar,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
+import axios from "../utils/axios"; // Import the custom Axios instance
 
 import AuthContext from "../contexts/AuthContext";
 import { logout } from "../services/AuthService";
@@ -16,15 +18,8 @@ import CategoryList from "../components/CategoryList";
 import BookList from "../components/BookList";
 
 // Mock data for the application
-const pdfData = [
-  { id: "1", title: "BSc", image: require("../../assets/placeholder.jpg") },
-  { id: "2", title: "BTech", image: require("../../assets/placeholder.jpg") },
-  { id: "3", title: "BAG", image: require("../../assets/placeholder.jpg") },
-  { id: "4", title: "MBA", image: require("../../assets/placeholder.jpg") },
-  { id: "5", title: "MCA", image: require("../../assets/placeholder.jpg") },
-];
-
 const categories = [
+  { id: "0", name: "All" },
   { id: "1", name: "Fiction" },
   { id: "2", name: "Non-Fiction" },
   { id: "3", name: "Education" },
@@ -38,6 +33,8 @@ const booksData = [
   { id: "2", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
   { id: "3", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
   { id: "4", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
+  { id: "9", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
+  { id: "8", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
   {
     id: "5",
     title: "The Great Novel",
@@ -62,7 +59,21 @@ const ReadingApp = () => {
   }
 
   const [activeTab, setActiveTab] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState("Non-Fiction");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [pdfData, setPdfData] = useState([]);
+
+  useEffect(() => {
+    const fetchPdfData = async () => {
+      try {
+        const response = await axios.get("/pdf/category");
+        setPdfData(response.data);
+      } catch (error) {
+        console.error("Error fetching PDF data:", error);
+      }
+    };
+
+    fetchPdfData();
+  }, []);
 
   // Filter books based on selected category
   const filteredBooks = booksData.filter(
@@ -76,6 +87,38 @@ const ReadingApp = () => {
         <PdfList data={pdfData} />
       </>
     ) : null;
+
+  const renderItem = ({ item }) => {
+    if (item.type === "pdfList") {
+      return (
+        <>
+          <Text style={styles.sectionTitle}>Latest PDF</Text>
+          <PdfList data={pdfData} />
+        </>
+      );
+    } else if (item.type === "categoryList") {
+      return (
+        <CategoryList
+          data={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
+      );
+    } else if (item.type === "bookList") {
+      return (
+        <View style={styles.booksContainer}>
+          <BookList data={filteredBooks} />
+        </View>
+      );
+    }
+    return null;
+  };
+
+  const data = [
+    { type: "pdfList" },
+    { type: "categoryList" },
+    { type: "bookList" },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -96,21 +139,12 @@ const ReadingApp = () => {
       </View>
 
       {/* Main content */}
-      <View style={styles.content}>
-        {screenContent}
-
-        {/* Categories */}
-        <CategoryList
-          data={categories}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-        />
-
-        {/* White background card for books list */}
-        <View style={styles.booksContainer}>
-          <BookList data={filteredBooks} />
-        </View>
-      </View>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.content}
+      />
 
       {/* Bottom navigation */}
       <View style={styles.bottomNav}>
