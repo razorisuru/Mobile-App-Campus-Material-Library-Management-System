@@ -28,28 +28,6 @@ const categories = [
   { id: "6", name: "Technology" },
 ];
 
-const booksData = [
-  { id: "1", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
-  { id: "2", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
-  { id: "3", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
-  { id: "4", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
-  { id: "9", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
-  { id: "8", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
-  {
-    id: "5",
-    title: "The Great Novel",
-    author: "Jane Doe",
-    category: "Fiction",
-  },
-  { id: "6", title: "Learn Math", author: "Prof Smith", category: "Education" },
-  {
-    id: "7",
-    title: "Business Tactics",
-    author: "CEO Jones",
-    category: "Business",
-  },
-];
-
 const HomeScreen = () => {
   const { user, setUser } = useContext(AuthContext);
 
@@ -61,6 +39,7 @@ const HomeScreen = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [pdfData, setPdfData] = useState([]);
+  const [booksData, setBooksData] = useState([]);
 
   useEffect(() => {
     const fetchPdfData = async () => {
@@ -72,12 +51,22 @@ const HomeScreen = () => {
       }
     };
 
+    const fetchBooksData = async () => {
+      try {
+        const response = await axios.get("/ebooks");
+        setBooksData(response.data);
+      } catch (error) {
+        console.error("Error fetching books data:", error);
+      }
+    };
+
     fetchPdfData();
+    fetchBooksData();
   }, []);
 
   // Filter books based on selected category
   const filteredBooks = booksData.filter(
-    (book) => selectedCategory === "All" || book.category === selectedCategory
+    (book) => selectedCategory === "All" || book.categories.some(category => category.name === selectedCategory)
   );
 
   const screenContent =

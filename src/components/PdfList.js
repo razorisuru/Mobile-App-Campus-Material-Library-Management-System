@@ -6,7 +6,7 @@ const PdfList = ({ data }) => {
     <TouchableOpacity style={styles.pdfCard}>
       <View style={styles.pdfImageContainer}>
         <View style={styles.imagePlaceholder}>
-          <Image source={require("../../assets/placeholder.jpg")} style={styles.placeholderImage} />
+          <Image source={require("../../assets/SIBA-E-LIB.png")} style={styles.placeholderImage} />
           {/* <Text >{item.description}</Text> */}
         </View>
       </View>
@@ -53,9 +53,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   placeholderImage: {
-    width: 40,
-    height: 40,
-    tintColor: "#AAAAAA",
+    width: 70,
+    height: 70,
+    // tintColor: "#AAAAAA",
   },
 });
 

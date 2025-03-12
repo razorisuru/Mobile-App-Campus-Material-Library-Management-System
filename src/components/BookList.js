@@ -6,11 +6,11 @@ const BookList = ({ data }) => {
     <TouchableOpacity style={styles.bookItem}>
       <View style={styles.bookImageContainer}>
         <View style={styles.imagePlaceholder}>
-          <Image source={require("../../assets/placeholder.jpg")} style={styles.placeholderImage} />
+          <Image source={{ uri: `http://192.168.8.102:8000/storage/${item.cover_image}`}}  style={styles.placeholderImage} />
         </View>
       </View>
       <View style={styles.bookInfo}>
-        <Text style={styles.bookCategory}>{item.category}</Text>
+        <Text style={styles.bookCategory}>{item.categories.name}</Text>
         <Text style={styles.bookTitle}>{item.title}</Text>
         <Text style={styles.bookAuthor}>{item.author}</Text>
       </View>
@@ -53,9 +53,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   placeholderImage: {
-    width: 40,
-    height: 40,
-    tintColor: "#AAAAAA",
+    width: 70,
+    height: 70,
+    // tintColor: "#AAAAAA",
   },
   bookInfo: {
     flex: 1,
