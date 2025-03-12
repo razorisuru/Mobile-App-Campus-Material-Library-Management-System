@@ -1,6 +1,6 @@
 import React from "react";
 import { View, SafeAreaView, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import RNFS from 'react-native-fs';
+// import RNFS from 'react-native-fs';
 
 const BookDetailScreen = ({ route, navigation }) => {
   const { book } = route.params;
