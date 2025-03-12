@@ -1,19 +1,19 @@
-import React, { useState,useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
   TextInput,
   StyleSheet,
   SafeAreaView,
-  FlatList,
   StatusBar,
+  TouchableOpacity,
 } from "react-native";
 
 import AuthContext from "../contexts/AuthContext";
 import { logout } from "../services/AuthService";
+import PdfList from "../components/PdfList";
+import CategoryList from "../components/CategoryList";
+import BookList from "../components/BookList";
 
 // Mock data for the application
 const pdfData = [
@@ -60,62 +60,9 @@ const ReadingApp = () => {
     await logout();
     setUser(null);
   }
+
   const [activeTab, setActiveTab] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("Non-Fiction");
-
-  const renderPdfItem = ({ item }) => (
-    <TouchableOpacity style={styles.pdfCard}>
-      <View style={styles.pdfImageContainer}>
-        <View style={styles.imagePlaceholder}>
-          <Image
-            source={require("../../assets/placeholder.jpg")}
-            style={styles.placeholderImage}
-          />
-        </View>
-      </View>
-      <Text style={styles.pdfTitle}>{item.title}</Text>
-    </TouchableOpacity>
-  );
-
-  const renderCategoryItem = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.categoryButton,
-        selectedCategory === item.name && styles.selectedCategoryButton,
-      ]}
-      onPress={() => setSelectedCategory(item.name)}
-    >
-      <Text
-        style={[
-          styles.categoryText,
-          selectedCategory === item.name && styles.selectedCategoryText,
-        ]}
-      >
-        {item.name}
-      </Text>
-    </TouchableOpacity>
-  );
-
-  const renderBookItem = ({ item }) => (
-    <TouchableOpacity style={styles.bookItem}>
-      <View style={styles.bookImageContainer}>
-        <View style={styles.imagePlaceholder}>
-          <Image
-            source={require("../../assets/placeholder.jpg")}
-            style={styles.placeholderImage}
-          />
-        </View>
-      </View>
-      <View style={styles.bookInfo}>
-        <Text style={styles.bookCategory}>{item.category}</Text>
-        <Text style={styles.bookTitle}>{item.title}</Text>
-        <Text style={styles.bookAuthor}>{item.author}</Text>
-      </View>
-      <TouchableOpacity style={styles.arrowButton}>
-        <Text style={styles.arrowText}>›</Text>
-      </TouchableOpacity>
-    </TouchableOpacity>
-  );
 
   // Filter books based on selected category
   const filteredBooks = booksData.filter(
@@ -126,14 +73,7 @@ const ReadingApp = () => {
     activeTab === 0 ? (
       <>
         <Text style={styles.sectionTitle}>Latest PDF</Text>
-        <FlatList
-          data={pdfData}
-          renderItem={renderPdfItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.pdfList}
-        />
+        <PdfList data={pdfData} />
       </>
     ) : null;
 
@@ -160,24 +100,15 @@ const ReadingApp = () => {
         {screenContent}
 
         {/* Categories */}
-        <FlatList
+        <CategoryList
           data={categories}
-          renderItem={renderCategoryItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryList}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
         />
 
         {/* White background card for books list */}
         <View style={styles.booksContainer}>
-          <FlatList
-            data={filteredBooks}
-            renderItem={renderBookItem}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            style={styles.booksList}
-          />
+          <BookList data={filteredBooks} />
         </View>
       </View>
 
@@ -199,7 +130,6 @@ const ReadingApp = () => {
 
         <TouchableOpacity
           style={styles.navButton}
-          // onPress={() => setActiveTab(2)}
           onPress={handleLogout}
         >
           <Text style={styles.navIcon}>👤</Text>
@@ -246,101 +176,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-  pdfList: {
-    marginBottom: 15,
-  },
-  pdfCard: {
-    marginLeft: 15,
-    marginRight: 5,
-    width: 125,
-    borderRadius: 10,
-    backgroundColor: "#FFFFFF",
-    overflow: "hidden",
-  },
-  pdfImageContainer: {
-    height: 100,
-    backgroundColor: "#E5E5E5",
-  },
-  pdfTitle: {
-    padding: 10,
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  categoryList: {
-    marginBottom: 15,
-  },
-  categoryButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    marginLeft: 15,
-  },
-  selectedCategoryButton: {
-    borderBottomWidth: 2,
-    borderBottomColor: "#FFFFFF",
-  },
-  categoryText: {
-    color: "rgba(255, 255, 255, 0.7)",
-    fontSize: 16,
-  },
-  selectedCategoryText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
   booksContainer: {
     flex: 1,
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     overflow: "hidden",
-  },
-  booksList: {
-    padding: 15,
-  },
-  bookItem: {
-    flexDirection: "row",
-    marginBottom: 15,
-    alignItems: "center",
-  },
-  bookImageContainer: {
-    width: 80,
-    height: 80,
-    backgroundColor: "#E5E5E5",
-    borderRadius: 8,
-    marginRight: 15,
-  },
-  imagePlaceholder: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  placeholderImage: {
-    width: 40,
-    height: 40,
-    tintColor: "#AAAAAA",
-  },
-  bookInfo: {
-    flex: 1,
-  },
-  bookCategory: {
-    color: "#888888",
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  bookTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  bookAuthor: {
-    color: "#555555",
-    fontSize: 14,
-  },
-  arrowButton: {
-    padding: 10,
-  },
-  arrowText: {
-    fontSize: 24,
-    color: "#333333",
   },
   bottomNav: {
     flexDirection: "row",
