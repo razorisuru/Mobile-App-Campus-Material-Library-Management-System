@@ -13,7 +13,7 @@ import AuthContext from "../contexts/AuthContext";
 export default function LoadingScreen() {
     return (
         <ImageBackground
-            // source={require("../../assets/SIBA-E-LIB.png")}
+            source={require("../../assets/bg-blur.png")}
             style={styles.background}
         >
             <SafeAreaView style={styles.container}>

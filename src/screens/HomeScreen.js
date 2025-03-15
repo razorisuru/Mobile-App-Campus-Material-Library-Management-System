@@ -1,30 +1,25 @@
-import React, { useState,useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
   TextInput,
   StyleSheet,
   SafeAreaView,
-  FlatList,
   StatusBar,
+  TouchableOpacity,
+  FlatList,
 } from "react-native";
+import axios from "../utils/axios"; // Import the custom Axios instance
 
 import AuthContext from "../contexts/AuthContext";
 import { logout } from "../services/AuthService";
+import PdfList from "../components/PdfList";
+import CategoryList from "../components/CategoryList";
+import BookList from "../components/BookList";
 
 // Mock data for the application
-const pdfData = [
-  { id: "1", title: "BSc", image: require("../../assets/placeholder.jpg") },
-  { id: "2", title: "BTech", image: require("../../assets/placeholder.jpg") },
-  { id: "3", title: "BAG", image: require("../../assets/placeholder.jpg") },
-  { id: "4", title: "MBA", image: require("../../assets/placeholder.jpg") },
-  { id: "5", title: "MCA", image: require("../../assets/placeholder.jpg") },
-];
-
 const categories = [
+  { id: "0", name: "All" },
   { id: "1", name: "Fiction" },
   { id: "2", name: "Non-Fiction" },
   { id: "3", name: "Education" },
@@ -33,109 +28,86 @@ const categories = [
   { id: "6", name: "Technology" },
 ];
 
-const booksData = [
-  { id: "1", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
-  { id: "2", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
-  { id: "3", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
-  { id: "4", title: "Non-Fiction", author: "Author", category: "Non-Fiction" },
-  {
-    id: "5",
-    title: "The Great Novel",
-    author: "Jane Doe",
-    category: "Fiction",
-  },
-  { id: "6", title: "Learn Math", author: "Prof Smith", category: "Education" },
-  {
-    id: "7",
-    title: "Business Tactics",
-    author: "CEO Jones",
-    category: "Business",
-  },
-];
-
-const ReadingApp = () => {
+const HomeScreen = () => {
   const { user, setUser } = useContext(AuthContext);
 
   async function handleLogout() {
     await logout();
     setUser(null);
   }
+
   const [activeTab, setActiveTab] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState("Non-Fiction");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [pdfData, setPdfData] = useState([]);
+  const [booksData, setBooksData] = useState([]);
 
-  const renderPdfItem = ({ item }) => (
-    <TouchableOpacity style={styles.pdfCard}>
-      <View style={styles.pdfImageContainer}>
-        <View style={styles.imagePlaceholder}>
-          <Image
-            source={require("../../assets/placeholder.jpg")}
-            style={styles.placeholderImage}
-          />
-        </View>
-      </View>
-      <Text style={styles.pdfTitle}>{item.title}</Text>
-    </TouchableOpacity>
-  );
+  useEffect(() => {
+    const fetchPdfData = async () => {
+      try {
+        const response = await axios.get("/pdf/category");
+        setPdfData(response.data);
+      } catch (error) {
+        console.error("Error fetching PDF data:", error);
+      }
+    };
 
-  const renderCategoryItem = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.categoryButton,
-        selectedCategory === item.name && styles.selectedCategoryButton,
-      ]}
-      onPress={() => setSelectedCategory(item.name)}
-    >
-      <Text
-        style={[
-          styles.categoryText,
-          selectedCategory === item.name && styles.selectedCategoryText,
-        ]}
-      >
-        {item.name}
-      </Text>
-    </TouchableOpacity>
-  );
+    const fetchBooksData = async () => {
+      try {
+        const response = await axios.get("/ebooks");
+        setBooksData(response.data);
+      } catch (error) {
+        console.error("Error fetching books data:", error);
+      }
+    };
 
-  const renderBookItem = ({ item }) => (
-    <TouchableOpacity style={styles.bookItem}>
-      <View style={styles.bookImageContainer}>
-        <View style={styles.imagePlaceholder}>
-          <Image
-            source={require("../../assets/placeholder.jpg")}
-            style={styles.placeholderImage}
-          />
-        </View>
-      </View>
-      <View style={styles.bookInfo}>
-        <Text style={styles.bookCategory}>{item.category}</Text>
-        <Text style={styles.bookTitle}>{item.title}</Text>
-        <Text style={styles.bookAuthor}>{item.author}</Text>
-      </View>
-      <TouchableOpacity style={styles.arrowButton}>
-        <Text style={styles.arrowText}>›</Text>
-      </TouchableOpacity>
-    </TouchableOpacity>
-  );
+    fetchPdfData();
+    fetchBooksData();
+  }, []);
 
   // Filter books based on selected category
   const filteredBooks = booksData.filter(
-    (book) => selectedCategory === "All" || book.category === selectedCategory
+    (book) => selectedCategory === "All" || book.categories.some(category => category.name === selectedCategory)
   );
 
   const screenContent =
     activeTab === 0 ? (
       <>
         <Text style={styles.sectionTitle}>Latest PDF</Text>
-        <FlatList
-          data={pdfData}
-          renderItem={renderPdfItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.pdfList}
-        />
+        <PdfList data={pdfData} />
       </>
     ) : null;
+
+  const renderItem = ({ item }) => {
+    if (item.type === "pdfList") {
+      return (
+        <>
+          <Text style={styles.sectionTitle}>Latest PDF</Text>
+          <PdfList data={pdfData} />
+        </>
+      );
+    } else if (item.type === "categoryList") {
+      return (
+        <CategoryList
+          data={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
+      );
+    } else if (item.type === "bookList") {
+      return (
+        <View style={styles.booksContainer}>
+          <BookList data={filteredBooks} />
+        </View>
+      );
+    }
+    return null;
+  };
+
+  const data = [
+    { type: "pdfList" },
+    { type: "categoryList" },
+    { type: "bookList" },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -156,30 +128,12 @@ const ReadingApp = () => {
       </View>
 
       {/* Main content */}
-      <View style={styles.content}>
-        {screenContent}
-
-        {/* Categories */}
-        <FlatList
-          data={categories}
-          renderItem={renderCategoryItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryList}
-        />
-
-        {/* White background card for books list */}
-        <View style={styles.booksContainer}>
-          <FlatList
-            data={filteredBooks}
-            renderItem={renderBookItem}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            style={styles.booksList}
-          />
-        </View>
-      </View>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.content}
+      />
 
       {/* Bottom navigation */}
       <View style={styles.bottomNav}>
@@ -199,7 +153,6 @@ const ReadingApp = () => {
 
         <TouchableOpacity
           style={styles.navButton}
-          // onPress={() => setActiveTab(2)}
           onPress={handleLogout}
         >
           <Text style={styles.navIcon}>👤</Text>
@@ -246,101 +199,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-  pdfList: {
-    marginBottom: 15,
-  },
-  pdfCard: {
-    marginLeft: 15,
-    marginRight: 5,
-    width: 125,
-    borderRadius: 10,
-    backgroundColor: "#FFFFFF",
-    overflow: "hidden",
-  },
-  pdfImageContainer: {
-    height: 100,
-    backgroundColor: "#E5E5E5",
-  },
-  pdfTitle: {
-    padding: 10,
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  categoryList: {
-    marginBottom: 15,
-  },
-  categoryButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    marginLeft: 15,
-  },
-  selectedCategoryButton: {
-    borderBottomWidth: 2,
-    borderBottomColor: "#FFFFFF",
-  },
-  categoryText: {
-    color: "rgba(255, 255, 255, 0.7)",
-    fontSize: 16,
-  },
-  selectedCategoryText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
   booksContainer: {
     flex: 1,
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     overflow: "hidden",
-  },
-  booksList: {
-    padding: 15,
-  },
-  bookItem: {
-    flexDirection: "row",
-    marginBottom: 15,
-    alignItems: "center",
-  },
-  bookImageContainer: {
-    width: 80,
-    height: 80,
-    backgroundColor: "#E5E5E5",
-    borderRadius: 8,
-    marginRight: 15,
-  },
-  imagePlaceholder: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  placeholderImage: {
-    width: 40,
-    height: 40,
-    tintColor: "#AAAAAA",
-  },
-  bookInfo: {
-    flex: 1,
-  },
-  bookCategory: {
-    color: "#888888",
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  bookTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  bookAuthor: {
-    color: "#555555",
-    fontSize: 14,
-  },
-  arrowButton: {
-    padding: 10,
-  },
-  arrowText: {
-    fontSize: 24,
-    color: "#333333",
   },
   bottomNav: {
     flexDirection: "row",
@@ -360,4 +224,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReadingApp;
+export default HomeScreen;

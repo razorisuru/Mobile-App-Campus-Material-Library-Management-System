@@ -12,6 +12,7 @@ import AuthContext from "./src/contexts/AuthContext";
 import { loadUser } from "./src/services/AuthService";
 import LoadingScreen from "./src/screens/LoadingScreen";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
+import BookDetailScreen from "./src/screens/BookDetailScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +46,7 @@ export default function App() {
           {user ? (
             <>
               <Stack.Screen name="Home" component={HomeScreen} />
+              <Stack.Screen name="BookDetail" component={BookDetailScreen} />
             </>
           ) : (
             <>
