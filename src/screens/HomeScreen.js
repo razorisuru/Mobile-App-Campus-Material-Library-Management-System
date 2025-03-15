@@ -18,15 +18,7 @@ import CategoryList from "../components/CategoryList";
 import BookList from "../components/BookList";
 
 // Mock data for the application
-const categories = [
-  { id: "0", name: "All" },
-  { id: "1", name: "Fiction" },
-  { id: "2", name: "Non-Fiction" },
-  { id: "3", name: "Education" },
-  { id: "4", name: "Business" },
-  { id: "5", name: "Science" },
-  { id: "6", name: "Technology" },
-];
+let categories = [{ id: "0", name: "All" }];
 
 const HomeScreen = () => {
   const { user, setUser } = useContext(AuthContext);
@@ -40,6 +32,7 @@ const HomeScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [pdfData, setPdfData] = useState([]);
   const [booksData, setBooksData] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchPdfData = async () => {
@@ -60,13 +53,25 @@ const HomeScreen = () => {
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("/ebook/category");
+        setCategories([{ id: "0", name: "All" }, ...response.data]);
+      } catch (error) {
+        console.error("Error fetching ebook category data:", error);
+      }
+    };
+
     fetchPdfData();
     fetchBooksData();
+    fetchCategories();
   }, []);
 
   // Filter books based on selected category
   const filteredBooks = booksData.filter(
-    (book) => selectedCategory === "All" || book.categories.some(category => category.name === selectedCategory)
+    (book) =>
+      selectedCategory === "All" ||
+      book.categories.some((category) => category.name === selectedCategory)
   );
 
   const screenContent =
@@ -151,10 +156,7 @@ const HomeScreen = () => {
           <Text style={styles.navIcon}>📖</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={handleLogout}
-        >
+        <TouchableOpacity style={styles.navButton} onPress={handleLogout}>
           <Text style={styles.navIcon}>👤</Text>
         </TouchableOpacity>
       </View>
