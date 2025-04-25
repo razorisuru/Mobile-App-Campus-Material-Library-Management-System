@@ -24,8 +24,8 @@ let categories = [{ id: "0", name: "All" }];
 
 const HomeScreen = () => {
   const { user, setUser } = useContext(AuthContext);
-  const BACKEND_URL = process.env.BACKEND_URL;
-console.log("Backend URL:", BACKEND_URL); // Log the backend URL for debugging
+//   const BACKEND_URL = process.env.BACKEND_URL;
+// console.log("Backend URL:", BACKEND_URL); // Log the backend URL for debugging
 
 
   async function handleLogout() {
