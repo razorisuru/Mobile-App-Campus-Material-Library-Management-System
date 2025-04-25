@@ -11,8 +11,6 @@ import {
 } from "react-native";
 import axios from "../utils/axios"; // Import the custom Axios instance
 
-
-
 import AuthContext from "../contexts/AuthContext";
 import { logout } from "../services/AuthService";
 import PdfList from "../components/PdfList";
@@ -24,9 +22,8 @@ let categories = [{ id: "0", name: "All" }];
 
 const HomeScreen = () => {
   const { user, setUser } = useContext(AuthContext);
-//   const BACKEND_URL = process.env.BACKEND_URL;
-// console.log("Backend URL:", BACKEND_URL); // Log the backend URL for debugging
 
+  // console.log(EXPO_BACKEND_URL); // Log the backend URL to verify it's being imported correctly
 
   async function handleLogout() {
     await logout();
@@ -120,7 +117,6 @@ const HomeScreen = () => {
   ];
 
   return (
-    
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
 

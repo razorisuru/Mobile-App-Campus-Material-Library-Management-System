@@ -2,6 +2,8 @@ import React from "react";
 import { FlatList, TouchableOpacity, View, Text, Image, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
+import { EXPO_BACKEND_URL } from "@env";
+
 const BookList = ({ data }) => {
   const navigation = useNavigation();
 
@@ -14,7 +16,7 @@ const BookList = ({ data }) => {
         <View style={styles.imagePlaceholder}>
           <Image
             // source={{ uri: `http://192.168.8.114:8000/storage/${item.cover_image}` }} //Lap
-            source={{ uri: `http://192.168.8.125:8000/storage/${item.cover_image}` }} //PC
+            source={{ uri: `${EXPO_BACKEND_URL}/storage/${item.cover_image}` }} //PC
             style={styles.placeholderImage}
           />
         </View>
