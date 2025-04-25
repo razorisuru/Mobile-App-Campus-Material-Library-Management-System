@@ -13,7 +13,8 @@ const BookList = ({ data }) => {
       <View style={styles.bookImageContainer}>
         <View style={styles.imagePlaceholder}>
           <Image
-            source={{ uri: `http://192.168.8.114:8000/storage/${item.cover_image}` }}
+            // source={{ uri: `http://192.168.8.114:8000/storage/${item.cover_image}` }} //Lap
+            source={{ uri: `http://192.168.8.125:8000/storage/${item.cover_image}` }} //PC
             style={styles.placeholderImage}
           />
         </View>
