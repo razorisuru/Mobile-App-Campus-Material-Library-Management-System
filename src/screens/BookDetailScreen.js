@@ -2,12 +2,14 @@ import React from "react";
 import { View, SafeAreaView, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 // import RNFS from 'react-native-fs';
 
+import { EXPO_BACKEND_URL } from "@env";
+
 const BookDetailScreen = ({ route, navigation }) => {
   const { book } = route.params;
 
   const downloadFile = async () => {
     // const fileUrl = `http://192.168.8.114:8000/storage/${book.file_path}`; //Lap
-    const fileUrl = `http://192.168.8.125:8000/storage/${book.file_path}`; //PC
+    const fileUrl = `${EXPO_BACKEND_URL}/storage/${book.file_path}`; //PC
     const downloadDest = `${RNFS.DocumentDirectoryPath}/${book.title}.pdf`;
 
     try {
@@ -37,7 +39,7 @@ const BookDetailScreen = ({ route, navigation }) => {
       <View style={styles.content}>
         <Image
           // source={{ uri: `http://192.168.8.114:8000/storage/${book.cover_image}` }} //Lap
-          source={{ uri: `http://192.168.8.125:8000/storage/${book.cover_image}` }} //PC
+          source={{ uri: `${EXPO_BACKEND_URL}/storage/${book.cover_image}` }} //PC
           style={styles.coverImage}
         />
         <Text style={styles.title}>{book.title}</Text>

@@ -23,6 +23,8 @@ let categories = [{ id: "0", name: "All" }];
 const HomeScreen = () => {
   const { user, setUser } = useContext(AuthContext);
 
+  // console.log(EXPO_BACKEND_URL); // Log the backend URL to verify it's being imported correctly
+
   async function handleLogout() {
     await logout();
     setUser(null);
