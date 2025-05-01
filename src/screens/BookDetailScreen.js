@@ -1,5 +1,6 @@
 import React from "react";
-import { View, SafeAreaView, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, SafeAreaView, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Share, Animated } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 // import RNFS from 'react-native-fs';
 
 import { EXPO_BACKEND_URL } from "@env";
@@ -29,32 +30,54 @@ const BookDetailScreen = ({ route, navigation }) => {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Check out ${book.title} by ${book.author}!`,
+        title: book.title,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}>‹ Back</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.content}>
-        <Image
-          // source={{ uri: `http://192.168.8.114:8000/storage/${book.cover_image}` }} //Lap
-          source={{ uri: `${EXPO_BACKEND_URL}/storage/${book.cover_image}` }} //PC
-          style={styles.coverImage}
-        />
-        <Text style={styles.title}>{book.title}</Text>
-        {/* <Text style={styles.title}>{book.file_path}</Text> */}
-        <Text style={styles.author}>{book.author}</Text>
-        <Text style={styles.description}>{book.description}</Text>
-        <TouchableOpacity
-          style={styles.downloadButton}
-          onPress={() => {
-            downloadFile();
-          }}
-        >
-          <Text style={styles.downloadButtonText}>Download</Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView bounces={false}>
+        <View style={styles.header}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <MaterialIcons name="arrow-back" size={24} color="#5D4FE8" />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.shareButton}
+            onPress={handleShare}
+          >
+            <MaterialIcons name="share" size={24} color="#5D4FE8" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.content}>
+          <Image
+            // source={{ uri: `http://192.168.8.114:8000/storage/${book.cover_image}` }} //Lap
+            source={{ uri: `${EXPO_BACKEND_URL}/storage/${book.cover_image}` }} //PC
+            style={styles.coverImage}
+          />
+          <Text style={styles.title}>{book.title}</Text>
+          {/* <Text style={styles.title}>{book.file_path}</Text> */}
+          <Text style={styles.author}>{book.author}</Text>
+          <Text style={styles.description}>{book.description}</Text>
+          <TouchableOpacity
+            style={styles.downloadButton}
+            onPress={() => {
+              downloadFile();
+            }}
+          >
+            <Text style={styles.downloadButtonText}>Download</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -68,10 +91,14 @@ const styles = StyleSheet.create({
     padding: 15,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
   },
   backButton: {
     fontSize: 18,
     color: "#5D4FE8",
+  },
+  shareButton: {
+    padding: 5,
   },
   content: {
     padding: 15,

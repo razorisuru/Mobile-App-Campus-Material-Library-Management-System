@@ -52,13 +52,23 @@ const styles = StyleSheet.create({
   bookItem: {
     flexDirection: "row",
     marginBottom: 15,
-    alignItems: "center",
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   bookImageContainer: {
-    width: 80,
-    height: 80,
-    backgroundColor: "#E5E5E5",
+    width: 100,
+    height: 140,
     borderRadius: 8,
+    overflow: 'hidden',
     marginRight: 15,
   },
   imagePlaceholder: {
@@ -67,8 +77,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   placeholderImage: {
-    width: 70,
-    height: 70,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   bookInfo: {
     flex: 1,

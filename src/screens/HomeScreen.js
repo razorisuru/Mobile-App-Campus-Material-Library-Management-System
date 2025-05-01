@@ -8,6 +8,8 @@ import {
   StatusBar,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import axios from "../utils/axios"; // Import the custom Axios instance
 
@@ -35,46 +37,68 @@ const HomeScreen = () => {
   const [pdfData, setPdfData] = useState([]);
   const [booksData, setBooksData] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const fetchPdfData = async () => {
-      try {
-        const response = await axios.get("/pdf/category");
-        setPdfData(response.data);
-      } catch (error) {
-        console.error("Error fetching PDF data:", error);
-      }
-    };
-
-    const fetchBooksData = async () => {
-      try {
-        const response = await axios.get("/ebooks");
-        setBooksData(response.data);
-      } catch (error) {
-        console.error("Error fetching books data:", error);
-      }
-    };
-
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get("/ebook/category");
-        setCategories([{ id: "0", name: "All" }, ...response.data]);
-      } catch (error) {
-        console.error("Error fetching ebook category data:", error);
-      }
-    };
-
-    fetchPdfData();
-    fetchBooksData();
-    fetchCategories();
+    fetchData();
   }, []);
 
-  // Filter books based on selected category
-  const filteredBooks = booksData.filter(
-    (book) =>
-      selectedCategory === "All" ||
-      book.categories.some((category) => category.name === selectedCategory)
-  );
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      await Promise.all([fetchPdfData(), fetchBooksData(), fetchCategories()]);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  const fetchPdfData = async () => {
+    try {
+      const response = await axios.get("/pdf/category");
+      setPdfData(response.data);
+    } catch (error) {
+      console.error("Error fetching PDF data:", error);
+    }
+  };
+
+  const fetchBooksData = async () => {
+    try {
+      const response = await axios.get("/ebooks");
+      setBooksData(response.data);
+    } catch (error) {
+      console.error("Error fetching books data:", error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("/ebook/category");
+      setCategories([{ id: "0", name: "All" }, ...response.data]);
+    } catch (error) {
+      console.error("Error fetching ebook category data:", error);
+    }
+  };
+
+  const onRefresh = () => {
+    setIsRefreshing(true);
+    fetchData();
+  };
+
+  // Filter books based on selected category and search query
+  const filteredBooks = booksData
+    .filter(
+      (book) =>
+        selectedCategory === "All" ||
+        book.categories.some((category) => category.name === selectedCategory)
+    )
+    .filter(
+      (book) =>
+        book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        book.author.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   const screenContent =
     activeTab === 0 ? (
@@ -128,8 +152,11 @@ const HomeScreen = () => {
           </TouchableOpacity>
           <TextInput
             style={styles.searchInput}
-            placeholder="Search"
+            placeholder="Search books..."
             placeholderTextColor="#A79FC9"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            returnKeyType="search"
           />
         </View>
       </View>
@@ -140,6 +167,20 @@ const HomeScreen = () => {
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         style={styles.content}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+        }
+        ListEmptyComponent={
+          isLoading ? (
+            <ActivityIndicator
+              size="large"
+              color="#5D4FE8"
+              style={{ marginTop: 50 }}
+            />
+          ) : (
+            <Text style={styles.emptyText}>No items found</Text>
+          )
+        }
       />
 
       {/* Bottom navigation */}
@@ -225,6 +266,12 @@ const styles = StyleSheet.create({
   },
   navIcon: {
     fontSize: 24,
+  },
+  emptyText: {
+    textAlign: "center",
+    color: "#A79FC9",
+    marginTop: 50,
+    fontSize: 16,
   },
 });
 
