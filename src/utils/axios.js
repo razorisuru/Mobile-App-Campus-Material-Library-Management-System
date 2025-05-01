@@ -3,7 +3,7 @@ import { getToken } from "../services/TokenService";
 
 const axios = axiosLib.create({
   // baseURL: "http://192.168.8.114:8000/api", //Laptop
-  baseURL: "http://192.168.8.125:8000/api", //PC
+  baseURL: `${process.env.EXPO_BACKEND_URL}/api`,
   headers: {
     Accept: "application/json",
     // Authorization: `Bearer ${data.token}`,

@@ -2,7 +2,7 @@
 
 # Using React-Native
 
-# This is a sub project for my Campus-Material-Library-Management-System(https://github.com/razorisuru/Campus-Material-Library-Management-System). I created a login and register functions for mobile using React-Native.
+# This is a sub project for my Campus-Material-Library-Management-System(https://github.com/razorisuru/Campus-Material-Library-Management-System). I created functions for mobile using React-Native.
 
 ## Installation
 
