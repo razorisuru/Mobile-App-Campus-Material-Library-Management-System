@@ -10,6 +10,7 @@ import {
 
 import GoogleIcon from "../icons/GoogleIcon";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import FormTextField from "../components/FormTextField";
 import { login, loadUser } from "../services/AuthService";
@@ -20,9 +21,11 @@ export default function ({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleLogin() {
     setErrors({});
+    setIsLoading(true);
     try {
       await login({
         email,
@@ -39,11 +42,14 @@ export default function ({ navigation }) {
       if (e.response?.status === 422) {
         setErrors(e.response.data.errors);
       }
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
     <View style={styles.container}>
+      <Spinner visible={isLoading} />
       {/* Logo Section */}
       <Image
         source={require("../../assets/SIBA-E-LIB.png")}
@@ -82,8 +88,17 @@ export default function ({ navigation }) {
       </View>
 
       {/* Login Button */}
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>LOGIN</Text>
+      <TouchableOpacity 
+        style={[
+          styles.loginButton,
+          isLoading && styles.disabledButton
+        ]} 
+        onPress={handleLogin}
+        disabled={isLoading}
+      >
+        <Text style={styles.loginButtonText}>
+          {isLoading ? 'LOGGING IN...' : 'LOGIN'}
+        </Text>
       </TouchableOpacity>
 
       {/* Social Login */}
@@ -177,5 +192,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     width: "60%",
   },
-
+  disabledButton: {
+    backgroundColor: '#8B4B8B',
+    opacity: 0.7,
+  },
 });

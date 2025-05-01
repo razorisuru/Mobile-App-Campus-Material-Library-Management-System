@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import Spinner from "react-native-loading-spinner-overlay";
 
 import FormTextField from "../components/FormTextField";
 import { register, loadUser } from "../services/AuthService";
@@ -23,9 +24,11 @@ export default function ({ navigation }) {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
-  async function handleRegister({ navigation }) {
+  async function handleRegister() {
     setErrors({});
+    setIsLoading(true);
     try {
       await register({
         name,
@@ -38,18 +41,19 @@ export default function ({ navigation }) {
       const user = await loadUser();
       setUser(user);
       navigation.replace("Home");
-
-      console.log(user);
     } catch (e) {
       console.log(e.response.data);
       if (e.response?.status === 422) {
         setErrors(e.response.data.errors);
       }
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
     <View style={styles.container}>
+      <Spinner visible={isLoading} />
       <Image
         source={require("../../assets/SIBA-E-LIB.png")}
         style={styles.logo}
@@ -90,8 +94,12 @@ export default function ({ navigation }) {
           placeholder="Email"
         />
       </View>
-      <View style={[styles.inputContainer,
-          errors.password && styles.errorInputContainer,]}>
+      <View
+        style={[
+          styles.inputContainer,
+          errors.password && styles.errorInputContainer,
+        ]}
+      >
         <FontAwesome
           name="lock"
           size={20}
@@ -107,8 +115,12 @@ export default function ({ navigation }) {
           placeholder="Password"
         />
       </View>
-      <View style={[styles.inputContainer,
-          errors.password && styles.errorInputContainer,]}>
+      <View
+        style={[
+          styles.inputContainer,
+          errors.password && styles.errorInputContainer,
+        ]}
+      >
         <FontAwesome
           name="lock"
           size={20}
@@ -126,8 +138,17 @@ export default function ({ navigation }) {
       </View>
 
       {/* Register Button */}
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-        <Text style={styles.registerButtonText}>REGISTER</Text>
+      <TouchableOpacity
+        style={[
+          styles.registerButton,
+          isLoading && styles.disabledButton,
+        ]}
+        onPress={handleRegister}
+        disabled={isLoading}
+      >
+        <Text style={styles.registerButtonText}>
+          {isLoading ? "REGISTERING..." : "REGISTER"}
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
         <Text
@@ -207,5 +228,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     marginBottom: 10,
+  },
+  disabledButton: {
+    backgroundColor: "#8B4B8B",
+    opacity: 0.7,
   },
 });
