@@ -16,7 +16,7 @@ import { logout } from '../services/AuthService';
 const ProfileScreen = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
 
-  console.log(`${user.profile_photo_path}`);
+//   console.log(`${user.profile_photo_path}`);
 
   const handleLogout = async () => {
     Alert.alert(
