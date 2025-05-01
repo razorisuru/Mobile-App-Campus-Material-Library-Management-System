@@ -110,7 +110,7 @@ const HomeScreen = ({navigation}) => {
     if (item.type === "pdfList") {
       return (
         <>
-          <Text style={styles.sectionTitle}>Latest PDF</Text>
+          <Text style={styles.sectionTitle}>Services</Text>
           <PdfList data={pdfData} />
         </>
       );
