@@ -22,7 +22,7 @@ import BookList from "../components/BookList";
 // Mock data for the application
 let categories = [{ id: "0", name: "All" }];
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   const { user, setUser } = useContext(AuthContext);
 
   async function handleLogout() {
@@ -175,6 +175,10 @@ const HomeScreen = () => {
     </View>
   );
 
+  const handleNavigateToPdf = () => {
+    navigation.navigate('Pdf');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -221,16 +225,16 @@ const HomeScreen = () => {
       <View style={styles.bottomNav}>
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => setActiveTab(0)}
+          onPress={handleNavigateToPdf}
         >
-          <Text style={styles.navIcon}>☰</Text>
+          <Text style={styles.navIcon}>📖</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => setActiveTab(1)}
         >
-          <Text style={styles.navIcon}>📖</Text>
+          <Text style={styles.navIcon}>☰</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navButton} onPress={handleLogout}>
