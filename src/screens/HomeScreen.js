@@ -8,6 +8,8 @@ import {
   StatusBar,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import axios from "../utils/axios"; // Import the custom Axios instance
 
@@ -23,8 +25,6 @@ let categories = [{ id: "0", name: "All" }];
 const HomeScreen = () => {
   const { user, setUser } = useContext(AuthContext);
 
-  // console.log(EXPO_BACKEND_URL); // Log the backend URL to verify it's being imported correctly
-
   async function handleLogout() {
     await logout();
     setUser(null);
@@ -35,54 +35,76 @@ const HomeScreen = () => {
   const [pdfData, setPdfData] = useState([]);
   const [booksData, setBooksData] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("title"); // 'title', 'author', 'date'
 
-  useEffect(() => {
-    const fetchPdfData = async () => {
-      try {
-        const response = await axios.get("/pdf/category");
-        setPdfData(response.data);
-      } catch (error) {
-        console.error("Error fetching PDF data:", error);
-      }
-    };
-
-    const fetchBooksData = async () => {
-      try {
-        const response = await axios.get("/ebooks");
-        setBooksData(response.data);
-      } catch (error) {
-        console.error("Error fetching books data:", error);
-      }
-    };
-
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get("/ebook/category");
-        setCategories([{ id: "0", name: "All" }, ...response.data]);
-      } catch (error) {
-        console.error("Error fetching ebook category data:", error);
-      }
-    };
-
-    fetchPdfData();
-    fetchBooksData();
-    fetchCategories();
+  const onRefresh = React.useCallback(() => {
+    setIsRefreshing(true);
+    fetchAllData();
   }, []);
 
-  // Filter books based on selected category
-  const filteredBooks = booksData.filter(
-    (book) =>
-      selectedCategory === "All" ||
-      book.categories.some((category) => category.name === selectedCategory)
-  );
+  const fetchPdfData = async () => {
+    try {
+      const response = await axios.get("/pdf/category");
+      setPdfData(response.data);
+    } catch (error) {
+      console.error("Error fetching PDF data:", error);
+    }
+  };
 
-  const screenContent =
-    activeTab === 0 ? (
-      <>
-        <Text style={styles.sectionTitle}>Latest PDF</Text>
-        <PdfList data={pdfData} />
-      </>
-    ) : null;
+  const fetchBooksData = async () => {
+    try {
+      const response = await axios.get("/ebooks");
+      setBooksData(response.data);
+    } catch (error) {
+      console.error("Error fetching books data:", error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("/ebook/category");
+      setCategories([{ id: "0", name: "All" }, ...response.data]);
+    } catch (error) {
+      console.error("Error fetching ebook category data:", error);
+    }
+  };
+
+  const fetchAllData = async () => {
+    setIsLoading(true);
+    try {
+      await Promise.all([fetchPdfData(), fetchBooksData(), fetchCategories()]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  // Filter and sort books based on selected category and search query
+  const filteredAndSortedBooks = booksData
+    .filter((book) => {
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        (selectedCategory === "All" ||
+          book.categories.some((category) => category.name === selectedCategory)) &&
+        (book.title.toLowerCase().includes(searchLower) ||
+          book.author.toLowerCase().includes(searchLower))
+      );
+    })
+    .sort((a, b) => {
+      if (sortBy === "title") return a.title.localeCompare(b.title);
+      if (sortBy === "author") return a.author.localeCompare(b.author);
+      if (sortBy === "date") return new Date(b.created_at) - new Date(a.created_at);
+      return 0;
+    });
 
   const renderItem = ({ item }) => {
     if (item.type === "pdfList") {
@@ -103,7 +125,7 @@ const HomeScreen = () => {
     } else if (item.type === "bookList") {
       return (
         <View style={styles.booksContainer}>
-          <BookList data={filteredBooks} />
+          <BookList data={filteredAndSortedBooks} />
         </View>
       );
     }
@@ -115,6 +137,43 @@ const HomeScreen = () => {
     { type: "categoryList" },
     { type: "bookList" },
   ];
+
+  const SearchHeader = () => (
+    <View style={styles.header}>
+      <View style={styles.searchContainer}>
+        <TouchableOpacity>
+          <Text style={styles.searchIcon}>🔍</Text>
+        </TouchableOpacity>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search books..."
+          placeholderTextColor="#A79FC9"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
+      <View style={styles.filterContainer}>
+        <TouchableOpacity 
+          style={[styles.filterButton, sortBy === 'title' && styles.activeFilter]}
+          onPress={() => setSortBy('title')}
+        >
+          <Text style={styles.filterText}>Title</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.filterButton, sortBy === 'author' && styles.activeFilter]}
+          onPress={() => setSortBy('author')}
+        >
+          <Text style={styles.filterText}>Author</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.filterButton, sortBy === 'date' && styles.activeFilter]}
+          onPress={() => setSortBy('date')}
+        >
+          <Text style={styles.filterText}>Latest</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -130,7 +189,9 @@ const HomeScreen = () => {
             style={styles.searchInput}
             placeholder="Search"
             placeholderTextColor="#A79FC9"
-          />
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          /> 
         </View>
       </View>
 
@@ -140,6 +201,20 @@ const HomeScreen = () => {
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         style={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            colors={["#5D4FE8"]}
+          />
+        }
+        ListEmptyComponent={
+          isLoading ? (
+            <ActivityIndicator size="large" color="#5D4FE8" style={{ marginTop: 20 }} />
+          ) : (
+            <Text style={styles.emptyText}>No items found</Text>
+          )
+        }
       />
 
       {/* Bottom navigation */}
@@ -225,6 +300,30 @@ const styles = StyleSheet.create({
   },
   navIcon: {
     fontSize: 24,
+  },
+  emptyText: {
+    textAlign: "center",
+    color: "#666",
+    marginTop: 20,
+    fontSize: 16,
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
+  },
+  filterButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 15,
+    backgroundColor: '#4F43C2',
+  },
+  activeFilter: {
+    backgroundColor: '#7A6FF0',
+  },
+  filterText: {
+    color: '#FFFFFF',
+    fontSize: 14,
   },
 });
 
