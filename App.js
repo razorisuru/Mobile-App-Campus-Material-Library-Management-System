@@ -15,6 +15,7 @@ import BookDetailScreen from "./src/screens/BookDetailScreen";
 
 import { loadUser } from "./src/services/AuthService";
 import PdfScreen from "./src/screens/PdfScreen";
+import ProfileScreen from "./src/screens/ProfileScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -50,6 +51,7 @@ export default function App() {
               <Stack.Screen name="Home" component={HomeScreen} />
               <Stack.Screen name="BookDetail" component={BookDetailScreen} />
               <Stack.Screen name="Pdf" component={PdfScreen} />
+              <Stack.Screen name="Profile" component={ProfileScreen} />
 
             </>
           ) : (

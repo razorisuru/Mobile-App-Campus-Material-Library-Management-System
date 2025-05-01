@@ -30,6 +30,10 @@ const HomeScreen = ({navigation}) => {
     setUser(null);
   }
 
+  async function handleNavigateToProfile() {
+    navigation.navigate("Profile"); 
+  }
+
   const [activeTab, setActiveTab] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [pdfData, setPdfData] = useState([]);
@@ -237,7 +241,7 @@ const HomeScreen = ({navigation}) => {
           <Text style={styles.navIcon}>☰</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navButton} onPress={handleLogout}>
+        <TouchableOpacity style={styles.navButton} onPress={handleNavigateToProfile}>
           <Text style={styles.navIcon}>👤</Text>
         </TouchableOpacity>
       </View>
