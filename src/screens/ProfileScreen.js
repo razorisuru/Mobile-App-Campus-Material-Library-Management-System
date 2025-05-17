@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import AuthContext from "../contexts/AuthContext";
 import { logout } from "../services/AuthService";
+import BottomNav from "../components/BottomNav";
 
 const ProfileScreen = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
@@ -67,12 +68,10 @@ const ProfileScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
-
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
       </View>
-
       <ScrollView style={styles.content}>
         {/* Profile Image */}
         <View style={styles.profileImageContainer}>
@@ -129,27 +128,8 @@ const ProfileScreen = ({ navigation }) => {
           <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
       </ScrollView>
-
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={handleNavigateToPdf}
-        >
-          <Text style={styles.navIcon}>📖</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={handleNavigateToHome}
-        >
-          <Text style={styles.navIcon}>☰</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={[styles.navButton, styles.activeNavButton]}>
-          <Text style={styles.navIcon}>👤</Text>
-        </TouchableOpacity>
-      </View>
+      <BottomNav navigation={navigation} activeScreen="Profile" />
     </SafeAreaView>
   );
 };

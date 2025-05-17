@@ -1,58 +1,118 @@
-import React from "react";
-import { View, SafeAreaView, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-// import RNFS from 'react-native-fs';
-
+import React, { useState } from "react";
+import { 
+  View, 
+  SafeAreaView, 
+  Text, 
+  Image, 
+  StyleSheet, 
+  TouchableOpacity, 
+  Linking,
+  Alert,
+  ActivityIndicator,
+  Share,
+  ScrollView,
+  Platform 
+} from "react-native";
+import { MaterialIcons } from '@expo/vector-icons';
 import { EXPO_BACKEND_URL } from "@env";
 
 const BookDetailScreen = ({ route, navigation }) => {
   const { book } = route.params;
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const downloadFile = async () => {
-    // const fileUrl = `http://192.168.8.114:8000/storage/${book.file_path}`; //Lap
-    const fileUrl = `${EXPO_BACKEND_URL}/storage/${book.file_path}`; //PC
-    const downloadDest = `${RNFS.DocumentDirectoryPath}/${book.title}.pdf`;
-
+    setIsDownloading(true);
     try {
-      const downloadResult = await RNFS.downloadFile({
-        fromUrl: fileUrl,
-        toFile: downloadDest,
-      }).promise;
-
-      if (downloadResult.statusCode === 200) {
-        Alert.alert('Download Complete', `File saved to: ${downloadDest}`);
+      const fileUrl = `${EXPO_BACKEND_URL}/storage/${book.file_path}`;
+      const supported = await Linking.canOpenURL(fileUrl);
+      
+      if (supported) {
+        await Linking.openURL(fileUrl);
       } else {
-        Alert.alert('Download Failed', 'Please try again.');
+        Alert.alert("Error", "Cannot open this file type");
       }
     } catch (error) {
-      Alert.alert('Error', 'An error occurred while downloading the file.');
-      console.error('Download Error:', error);
+      Alert.alert("Error", "Failed to download file");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const shareBook = async () => {
+    try {
+      await Share.share({
+        message: `Check out this book: ${book.title} by ${book.author} \n\n${book.description}\n\nDownload it here: ${EXPO_BACKEND_URL}/storage/${book.file_path}`,
+        url: `${EXPO_BACKEND_URL}/storage/${book.file_path}`,
+        title: book.title,
+      });
+    } catch (error) {
+      Alert.alert("Error", "Failed to share book");
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}>‹ Back</Text>
+        <TouchableOpacity 
+          style={styles.backButtonContainer} 
+          onPress={() => navigation.goBack()}
+        >
+          <MaterialIcons name="arrow-back" size={24} color="#5D4FE8" />
+          <Text style={styles.backButtonText}>Back</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={shareBook} style={styles.shareButton}>
+          <MaterialIcons name="share" size={24} color="#5D4FE8" />
         </TouchableOpacity>
       </View>
-      <View style={styles.content}>
-        <Image
-          // source={{ uri: `http://192.168.8.114:8000/storage/${book.cover_image}` }} //Lap
-          source={{ uri: `${EXPO_BACKEND_URL}/storage/${book.cover_image}` }} //PC
-          style={styles.coverImage}
-        />
-        <Text style={styles.title}>{book.title}</Text>
-        {/* <Text style={styles.title}>{book.file_path}</Text> */}
-        <Text style={styles.author}>{book.author}</Text>
-        <Text style={styles.description}>{book.description}</Text>
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: `${EXPO_BACKEND_URL}/storage/${book.cover_image}` }}
+            style={styles.coverImage}
+          />
+        </View>
+
+        <View style={styles.bookInfo}>
+          <Text style={styles.title}>{book.title}</Text>
+          <Text style={styles.author}>By {book.author}</Text>
+          
+          <View style={styles.metadata}>
+            {book.genre && (
+              <View style={styles.metadataItem}>
+                <MaterialIcons name="category" size={20} color="#666" />
+                <Text style={styles.metadataText}>{book.genre}</Text>
+              </View>
+            )}
+            {book.published_date && (
+              <View style={styles.metadataItem}>
+                <MaterialIcons name="date-range" size={20} color="#666" />
+                <Text style={styles.metadataText}>{book.published_date}</Text>
+              </View>
+            )}
+          </View>
+
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.sectionTitle}>About this book</Text>
+            <Text style={styles.description}>{book.description}</Text>
+          </View>
+        </View>
+      </ScrollView>
+
+      <View style={styles.bottomContainer}>
         <TouchableOpacity
-          style={styles.downloadButton}
-          onPress={() => {
-            downloadFile();
-          }}
+          style={[styles.downloadButton, isDownloading && styles.downloadingButton]}
+          onPress={downloadFile}
+          disabled={isDownloading}
         >
-          <Text style={styles.downloadButtonText}>Download</Text>
+          {isDownloading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <>
+              <MaterialIcons name="file-download" size={24} color="#FFFFFF" />
+              <Text style={styles.downloadButtonText}>Download PDF ({book.file_size_formatted})</Text>
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -65,47 +125,112 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   header: {
-    padding: 15,
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEEEEE",
+  },
+  backButtonContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
-  backButton: {
-    fontSize: 18,
+  backButtonText: {
+    fontSize: 16,
     color: "#5D4FE8",
+    marginLeft: 4,
+  },
+  shareButton: {
+    padding: 8,
   },
   content: {
-    padding: 15,
+    flex: 1,
+  },
+  imageContainer: {
+    backgroundColor: "#F5F5F5",
+    padding: 20,
+    alignItems: "center",
   },
   coverImage: {
-    width: "100%",
-    height: 200,
+    width: 200,
+    height: 300,
     resizeMode: "contain",
-    marginBottom: 15,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  bookInfo: {
+    padding: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
+    color: "#333333",
+    marginBottom: 8,
   },
   author: {
     fontSize: 18,
-    color: "#555555",
-    marginBottom: 10,
+    color: "#666666",
+    marginBottom: 16,
+  },
+  metadata: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: 20,
+  },
+  metadataItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 20,
+    marginBottom: 8,
+  },
+  metadataText: {
+    marginLeft: 4,
+    color: "#666666",
+  },
+  descriptionContainer: {
+    marginTop: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#333333",
   },
   description: {
     fontSize: 16,
-    color: "#333333",
-    marginBottom: 20,
+    lineHeight: 24,
+    color: "#666666",
+  },
+  bottomContainer: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#EEEEEE",
+    backgroundColor: "#FFFFFF",
   },
   downloadButton: {
     backgroundColor: "#5D4FE8",
-    padding: 15,
-    borderRadius: 8,
+    padding: 16,
+    borderRadius: 12,
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+  },
+  downloadingButton: {
+    backgroundColor: "#8B83E3",
   },
   downloadButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 8,
   },
 });
 
