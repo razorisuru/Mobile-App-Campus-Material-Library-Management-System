@@ -18,6 +18,7 @@ import { logout } from "../services/AuthService";
 import PdfList from "../components/PdfList";
 import CategoryList from "../components/CategoryList";
 import BookList from "../components/BookList";
+import BottomNav from "../components/BottomNav";
 
 // Mock data for the application
 let categories = [{ id: "0", name: "All" }];
@@ -225,26 +226,7 @@ const HomeScreen = ({navigation}) => {
         }
       />
 
-      {/* Bottom navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={handleNavigateToPdf}
-        >
-          <Text style={styles.navIcon}>📖</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => setActiveTab(1)}
-        >
-          <Text style={styles.navIcon}>☰</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navButton} onPress={handleNavigateToProfile}>
-          <Text style={styles.navIcon}>👤</Text>
-        </TouchableOpacity>
-      </View>
+      <BottomNav navigation={navigation} activeScreen="Home" />
     </SafeAreaView>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,19 +11,20 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
-} from 'react-native';
+} from "react-native";
 import axios from "../utils/axios";
+import BottomNav from "../components/BottomNav";
 
 const PdfScreen = ({ navigation }) => {
   const [pdfData, setPdfData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('title'); // 'title', 'date', 'subject'
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("title"); // 'title', 'date', 'subject'
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [degrees, setDegrees] = useState([]);
-  const [selectedDegree, setSelectedDegree] = useState('All');
+  const [selectedDegree, setSelectedDegree] = useState("All");
 
   const fetchPdfData = async () => {
     try {
@@ -75,36 +76,36 @@ const PdfScreen = ({ navigation }) => {
 
   // Navigation handlers
   const handleNavigateToHome = () => {
-    navigation.navigate('Home');
+    navigation.navigate("Home");
   };
 
   const handleNavigateToProfile = () => {
-    navigation.navigate('Profile');
+    navigation.navigate("Profile");
   };
 
   // Filter and sort PDFs
   const filteredAndSortedPdfs = pdfData
     .filter((pdf) => {
       const searchLower = searchQuery.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         pdf.title.toLowerCase().includes(searchLower) ||
         pdf.subjects.name.toLowerCase().includes(searchLower) ||
         pdf.category.name.toLowerCase().includes(searchLower);
-      
-      const matchesCategory = 
-        selectedCategory === 'All' || 
-        pdf.category.name === selectedCategory;
-      
-      const matchesDegree = 
-        selectedDegree === 'All' || 
-        pdf.degree.name === selectedDegree;
+
+      const matchesCategory =
+        selectedCategory === "All" || pdf.category.name === selectedCategory;
+
+      const matchesDegree =
+        selectedDegree === "All" || pdf.degree.name === selectedDegree;
 
       return matchesSearch && matchesCategory && matchesDegree;
     })
     .sort((a, b) => {
-      if (sortBy === 'title') return a.title.localeCompare(b.title);
-      if (sortBy === 'date') return new Date(b.created_at) - new Date(a.created_at);
-      if (sortBy === 'subject') return a.subjects.name.localeCompare(b.subjects.name);
+      if (sortBy === "title") return a.title.localeCompare(b.title);
+      if (sortBy === "date")
+        return new Date(b.created_at) - new Date(a.created_at);
+      if (sortBy === "subject")
+        return a.subjects.name.localeCompare(b.subjects.name);
       return 0;
     });
 
@@ -128,8 +129,8 @@ const PdfScreen = ({ navigation }) => {
   );
 
   const CategoryFilter = () => (
-    <ScrollView 
-      horizontal 
+    <ScrollView
+      horizontal
       showsHorizontalScrollIndicator={false}
       style={styles.categoryContainer}
     >
@@ -138,14 +139,15 @@ const PdfScreen = ({ navigation }) => {
           key={category.id}
           style={[
             styles.categoryButton,
-            selectedCategory === category.name && styles.activeCategoryButton
+            selectedCategory === category.name && styles.activeCategoryButton,
           ]}
           onPress={() => setSelectedCategory(category.name)}
         >
-          <Text 
+          <Text
             style={[
               styles.categoryButtonText,
-              selectedCategory === category.name && styles.activeCategoryButtonText
+              selectedCategory === category.name &&
+                styles.activeCategoryButtonText,
             ]}
           >
             {category.name}
@@ -156,8 +158,8 @@ const PdfScreen = ({ navigation }) => {
   );
 
   const DegreeFilter = () => (
-    <ScrollView 
-      horizontal 
+    <ScrollView
+      horizontal
       showsHorizontalScrollIndicator={false}
       style={styles.degreeContainer}
     >
@@ -166,14 +168,14 @@ const PdfScreen = ({ navigation }) => {
           key={degree.id}
           style={[
             styles.degreeButton,
-            selectedDegree === degree.name && styles.activeDegreeButton
+            selectedDegree === degree.name && styles.activeDegreeButton,
           ]}
           onPress={() => setSelectedDegree(degree.name)}
         >
-          <Text 
+          <Text
             style={[
               styles.degreeButtonText,
-              selectedDegree === degree.name && styles.activeDegreeButtonText
+              selectedDegree === degree.name && styles.activeDegreeButtonText,
             ]}
           >
             {degree.name}
@@ -181,7 +183,6 @@ const PdfScreen = ({ navigation }) => {
         </TouchableOpacity>
       ))}
     </ScrollView>
-    
   );
 
   return (
@@ -204,21 +205,30 @@ const PdfScreen = ({ navigation }) => {
         <CategoryFilter />
         <DegreeFilter />
         <View style={styles.filterContainer}>
-          <TouchableOpacity 
-            style={[styles.filterButton, sortBy === 'title' && styles.activeFilter]}
-            onPress={() => setSortBy('title')}
+          <TouchableOpacity
+            style={[
+              styles.filterButton,
+              sortBy === "title" && styles.activeFilter,
+            ]}
+            onPress={() => setSortBy("title")}
           >
             <Text style={styles.filterText}>Title</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.filterButton, sortBy === 'subject' && styles.activeFilter]}
-            onPress={() => setSortBy('subject')}
+          <TouchableOpacity
+            style={[
+              styles.filterButton,
+              sortBy === "subject" && styles.activeFilter,
+            ]}
+            onPress={() => setSortBy("subject")}
           >
             <Text style={styles.filterText}>Subject</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.filterButton, sortBy === 'date' && styles.activeFilter]}
-            onPress={() => setSortBy('date')}
+          <TouchableOpacity
+            style={[
+              styles.filterButton,
+              sortBy === "date" && styles.activeFilter,
+            ]}
+            onPress={() => setSortBy("date")}
           >
             <Text style={styles.filterText}>Latest</Text>
           </TouchableOpacity>
@@ -239,7 +249,11 @@ const PdfScreen = ({ navigation }) => {
         }
         ListEmptyComponent={
           isLoading ? (
-            <ActivityIndicator size="large" color="#5D4FE8" style={styles.loader} />
+            <ActivityIndicator
+              size="large"
+              color="#5D4FE8"
+              style={styles.loader}
+            />
           ) : (
             <Text style={styles.emptyText}>No PDFs found</Text>
           )
@@ -247,29 +261,7 @@ const PdfScreen = ({ navigation }) => {
       />
 
       {/* Bottom navigation */}
-      <View style={styles.bottomNav}>
-      <TouchableOpacity
-          style={[styles.navButton, styles.activeNavButton]}
-        >
-          <Text style={styles.navIcon}>📖</Text>
-        </TouchableOpacity>
-
-
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={handleNavigateToHome}
-        >
-          <Text style={styles.navIcon}>☰</Text>
-        </TouchableOpacity>
-
-        
-        <TouchableOpacity 
-          style={styles.navButton}
-          onPress={handleNavigateToProfile}
-        >
-          <Text style={styles.navIcon}>👤</Text>
-        </TouchableOpacity>
-      </View>
+      <BottomNav navigation={navigation} activeScreen="Pdf" />
     </SafeAreaView>
   );
 };
@@ -301,51 +293,51 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   filterContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     paddingVertical: 10,
   },
   filterButton: {
     paddingHorizontal: 15,
     paddingVertical: 5,
     borderRadius: 15,
-    backgroundColor: '#4F43C2',
+    backgroundColor: "#4F43C2",
   },
   activeFilter: {
-    backgroundColor: '#7A6FF0',
+    backgroundColor: "#7A6FF0",
   },
   filterText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
   },
   listContainer: {
     padding: 15,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   pdfCard: {
-    backgroundColor: '#F8F9FA',
+    backgroundColor: "#F8F9FA",
     borderRadius: 12,
     padding: 15,
     marginBottom: 15,
     elevation: 2,
   },
   pdfHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 10,
   },
   pdfTitle: {
     flex: 1,
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2C3E50',
+    fontWeight: "bold",
+    color: "#2C3E50",
   },
   categoryTag: {
-    backgroundColor: '#5D4FE8',
-    color: '#FFFFFF',
+    backgroundColor: "#5D4FE8",
+    color: "#FFFFFF",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -356,35 +348,35 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   subjectCode: {
-    color: '#5D4FE8',
+    color: "#5D4FE8",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   subjectName: {
-    color: '#7F8C8D',
+    color: "#7F8C8D",
     fontSize: 14,
   },
   pdfFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     borderTopWidth: 1,
-    borderTopColor: '#EEEEEE',
+    borderTopColor: "#EEEEEE",
     paddingTop: 10,
   },
   uploadedBy: {
-    color: '#95A5A6',
+    color: "#95A5A6",
     fontSize: 12,
   },
   date: {
-    color: '#95A5A6',
+    color: "#95A5A6",
     fontSize: 12,
   },
   loader: {
     marginTop: 20,
   },
   emptyText: {
-    textAlign: 'center',
-    color: '#666',
+    textAlign: "center",
+    color: "#666",
     marginTop: 20,
     fontSize: 16,
   },
@@ -396,18 +388,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#4F43C2',
+    backgroundColor: "#4F43C2",
     marginRight: 8,
   },
   activeCategoryButton: {
-    backgroundColor: '#7A6FF0',
+    backgroundColor: "#7A6FF0",
   },
   categoryButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
   },
   activeCategoryButtonText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   degreeContainer: {
     flexGrow: 0,
@@ -417,18 +409,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#4F43C2',
+    backgroundColor: "#4F43C2",
     marginRight: 8,
   },
   activeDegreeButton: {
-    backgroundColor: '#7A6FF0',
+    backgroundColor: "#7A6FF0",
   },
   degreeButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
   },
   activeDegreeButtonText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   bottomNav: {
     flexDirection: "row",
@@ -444,7 +436,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   activeNavButton: {
-    backgroundColor: '#F0F0F0',
+    backgroundColor: "#F0F0F0",
   },
   navIcon: {
     fontSize: 24,
