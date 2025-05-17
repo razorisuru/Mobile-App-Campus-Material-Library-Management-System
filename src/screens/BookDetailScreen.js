@@ -110,7 +110,7 @@ const BookDetailScreen = ({ route, navigation }) => {
           ) : (
             <>
               <MaterialIcons name="file-download" size={24} color="#FFFFFF" />
-              <Text style={styles.downloadButtonText}>Download PDF</Text>
+              <Text style={styles.downloadButtonText}>Download PDF ({book.file_size_formatted})</Text>
             </>
           )}
         </TouchableOpacity>

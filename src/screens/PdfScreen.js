@@ -121,6 +121,7 @@ const PdfScreen = ({ navigation }) => {
       </View>
       <View style={styles.pdfFooter}>
         <Text style={styles.uploadedBy}>By: {item.user.name}</Text>
+        <Text style={styles.uploadedBy}>Size: {item.file_size_formatted}</Text>
         <Text style={styles.date}>
           {new Date(item.created_at).toLocaleDateString()}
         </Text>
