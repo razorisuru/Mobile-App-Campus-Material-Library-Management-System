@@ -11,9 +11,15 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
+  Linking,
+  Share,
+  Alert,
 } from "react-native";
 import axios from "../utils/axios";
 import BottomNav from "../components/BottomNav";
+
+const EXPO_BACKEND_URL =
+  process.env.EXPO_BACKEND_URL || "http://your-backend-url";
 
 const PdfScreen = ({ navigation }) => {
   const [pdfData, setPdfData] = useState([]);
@@ -25,6 +31,7 @@ const PdfScreen = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [degrees, setDegrees] = useState([]);
   const [selectedDegree, setSelectedDegree] = useState("All");
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const fetchPdfData = async () => {
     try {
@@ -32,6 +39,30 @@ const PdfScreen = ({ navigation }) => {
       setPdfData(response.data);
     } catch (error) {
       console.error("Error fetching PDF data:", error);
+    }
+  };
+
+  const downloadFile = async (pdfPath) => {
+    if (!pdfPath) {
+      Alert.alert("Error", "Invalid file path");
+      return;
+    }
+
+    setIsDownloading(true);
+    try {
+      const fileUrl = `${EXPO_BACKEND_URL}/storage/${pdfPath}`;
+      const supported = await Linking.canOpenURL(fileUrl);
+
+      if (supported) {
+        await Linking.openURL(fileUrl);
+      } else {
+        Alert.alert("Error", "Cannot open this file type");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      Alert.alert("Error", "Failed to download file");
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -110,7 +141,11 @@ const PdfScreen = ({ navigation }) => {
     });
 
   const renderPdfItem = ({ item }) => (
-    <TouchableOpacity style={styles.pdfCard}>
+    <TouchableOpacity
+      onPress={() => downloadFile(item.file_path)}
+      style={styles.pdfCard}
+      disabled={isDownloading}
+    >
       <View style={styles.pdfHeader}>
         <Text style={styles.pdfTitle}>{item.title}</Text>
         <Text style={styles.categoryTag}>{item.category.name}</Text>
@@ -126,6 +161,13 @@ const PdfScreen = ({ navigation }) => {
           {new Date(item.created_at).toLocaleDateString()}
         </Text>
       </View>
+      {isDownloading && (
+        <ActivityIndicator
+          size="small"
+          color="#5D4FE8"
+          style={styles.downloadingIndicator}
+        />
+      )}
     </TouchableOpacity>
   );
 
@@ -441,6 +483,11 @@ const styles = StyleSheet.create({
   },
   navIcon: {
     fontSize: 24,
+  },
+  downloadingIndicator: {
+    position: "absolute",
+    right: 10,
+    top: 10,
   },
 });
 
