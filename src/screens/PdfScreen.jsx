@@ -32,11 +32,20 @@ const PdfScreen = ({ navigation }) => {
   const [degrees, setDegrees] = useState([]);
   const [selectedDegree, setSelectedDegree] = useState("All");
   const [isDownloading, setIsDownloading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMorePages, setHasMorePages] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const fetchPdfData = async () => {
+  const fetchPdfData = async (page = 1) => {
     try {
-      const response = await axios.get("/pdf");
-      setPdfData(response.data);
+      const response = await axios.get(`/pdf?page=${page}&per_page=10`);
+      if (page === 1) {
+        setPdfData(response.data.data);
+      } else {
+        setPdfData((prev) => [...prev, ...response.data.data]);
+      }
+      setHasMorePages(response.data.current_page < response.data.last_page);
+      setCurrentPage(response.data.current_page);
     } catch (error) {
       console.error("Error fetching PDF data:", error);
     }
@@ -105,6 +114,14 @@ const PdfScreen = ({ navigation }) => {
     fetchAllData();
   };
 
+  const loadMoreItems = async () => {
+    if (!hasMorePages || isLoadingMore) return;
+
+    setIsLoadingMore(true);
+    await fetchPdfData(currentPage + 1);
+    setIsLoadingMore(false);
+  };
+
   // Navigation handlers
   const handleNavigateToHome = () => {
     navigation.navigate("Home");
@@ -140,14 +157,14 @@ const PdfScreen = ({ navigation }) => {
       return 0;
     });
 
-  const renderPdfItem = ({ item }) => (
+  const renderPdfItem = ({ item, index }) => (
     <TouchableOpacity
       onPress={() => downloadFile(item.file_path)}
       style={styles.pdfCard}
       disabled={isDownloading}
     >
       <View style={styles.pdfHeader}>
-        <Text style={styles.pdfTitle}>{item.title}</Text>
+        <Text style={styles.pdfTitle}>#{index + 1} {item.title}</Text>
         <Text style={styles.categoryTag}>{item.category.name}</Text>
       </View>
       <View style={styles.pdfDetails}>
@@ -290,6 +307,8 @@ const PdfScreen = ({ navigation }) => {
             colors={["#5D4FE8"]}
           />
         }
+        onEndReached={loadMoreItems}
+        onEndReachedThreshold={0.5}
         ListEmptyComponent={
           isLoading ? (
             <ActivityIndicator
@@ -300,6 +319,11 @@ const PdfScreen = ({ navigation }) => {
           ) : (
             <Text style={styles.emptyText}>No PDFs found</Text>
           )
+        }
+        ListFooterComponent={() =>
+          isLoadingMore ? (
+            <ActivityIndicator size="small" color="#5D4FE8" style={styles.footerLoader} />
+          ) : null
         }
       />
 
@@ -488,6 +512,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 10,
     top: 10,
+  },
+  footerLoader: {
+    paddingVertical: 20,
   },
 });
 
