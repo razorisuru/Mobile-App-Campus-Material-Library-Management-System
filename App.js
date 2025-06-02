@@ -16,6 +16,7 @@ import BookDetailScreen from "./src/screens/BookDetailScreen";
 import { loadUser } from "./src/services/AuthService";
 import PdfScreen from "./src/screens/PdfScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
+import ChatScreen from "./src/screens/ChatScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +53,7 @@ export default function App() {
               <Stack.Screen name="BookDetail" component={BookDetailScreen} />
               <Stack.Screen name="Pdf" component={PdfScreen} />
               <Stack.Screen name="Profile" component={ProfileScreen} />
+              <Stack.Screen name="Chat" component={ChatScreen} />
 
             </>
           ) : (
