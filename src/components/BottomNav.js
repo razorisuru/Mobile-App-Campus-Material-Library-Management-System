@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#EEEEEE",
     paddingVertical: 10,
+    paddingHorizontal: 10,
   },
   navButton: {
     flex: 1,
