@@ -19,7 +19,7 @@ import axios from "../utils/axios";
 import BottomNav from "../components/BottomNav";
 
 const EXPO_BACKEND_URL =
-  process.env.EXPO_BACKEND_URL || "http://your-backend-url";
+  process.env.EXPO_BACKEND_URL || "http://192.168.8.125:8000";
 
 const PdfScreen = ({ navigation }) => {
   const [pdfData, setPdfData] = useState([]);
