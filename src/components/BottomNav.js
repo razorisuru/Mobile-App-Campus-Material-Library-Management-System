@@ -14,6 +14,18 @@ const BottomNav = ({ navigation, activeScreen }) => {
       <TouchableOpacity 
         style={[
           styles.navButton,
+          activeScreen === 'Chat' && styles.activeNavButton
+        ]} 
+        onPress={() => handleNavigate('Chat')}
+      >
+        <Text style={styles.navIcon}>
+            <MaterialIcons name="chat" size={24} color="#5D4FE8" />
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={[
+          styles.navButton,
           activeScreen === 'Pdf' && styles.activeNavButton
         ]} 
         onPress={() => handleNavigate('Pdf')}
@@ -57,6 +69,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#EEEEEE",
     paddingVertical: 10,
+    paddingHorizontal: 10,
   },
   navButton: {
     flex: 1,
