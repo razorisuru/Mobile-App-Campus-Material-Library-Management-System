@@ -42,9 +42,6 @@ A React Native mobile application for the Campus Material Library Management Sys
 
 1. Clone both the backend API and this mobile project:
     ```powershell
-    # Clone the backend API (app-api-testing branch)
-    git clone -b app-api-testing https://github.com/razorisuru/Campus-Material-Library-Management-System.git
-
     # Clone the mobile app
     git clone https://github.com/razorisuru/react-native-auth-laravel-backend.git
     cd react-native-auth-laravel-backend
