@@ -1337,10 +1337,10 @@
   resolved "https://registry.npmjs.org/@pkgjs/parseargs/-/parseargs-0.11.0.tgz"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@react-native-google-signin/google-signin@^14.0.1":
-  version "14.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-14.0.1.tgz#1cba5bc4867fef24dd855385be937d590dc5000b"
-  integrity sha512-2f903eaHiv/Ob96vsWZitz+Z0k2J2W0/C7Ygrr6ejAT2JVzJCatmjF/eq62MWhuTNdU2WDX/oePxMbpQW6k2UA==
+"@react-native-google-signin/google-signin@^13.1.0":
+  version "13.3.1"
+  resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-13.3.1.tgz#1834c4cd0264e9deb55bf8cef846aa8a1f335a9d"
+  integrity sha512-zLJxn6FZ5fUmtshmvUklN5eoxBf8TqAfUoW5fEycJ1zoyB9DjE0yB5LCoKNy+cZ3glyhji+cPXhfYsuzKzzFVQ==
 
 "@react-native/assets-registry@0.76.6":
   version "0.76.6"

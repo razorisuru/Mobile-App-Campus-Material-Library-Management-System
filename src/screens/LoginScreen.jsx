@@ -8,6 +8,9 @@ import {
   Platform,
 } from "react-native";
 
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
+
 import GoogleIcon from "../icons/GoogleIcon";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -15,7 +18,6 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import FormTextField from "../components/FormTextField";
 import { login, loadUser } from "../services/AuthService";
 import AuthContext from "../contexts/AuthContext";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 export default function ({ navigation }) {
   const { setUser } = useContext(AuthContext);
