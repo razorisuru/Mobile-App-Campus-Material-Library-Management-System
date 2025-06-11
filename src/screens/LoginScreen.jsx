@@ -15,6 +15,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import FormTextField from "../components/FormTextField";
 import { login, loadUser } from "../services/AuthService";
 import AuthContext from "../contexts/AuthContext";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 export default function ({ navigation }) {
   const { setUser } = useContext(AuthContext);
@@ -45,6 +46,12 @@ export default function ({ navigation }) {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  const handleGoogleLogin = async () => {
+    await GoogleSignin.hasPlayServices();
+    const userInfo = await GoogleSignin.signIn();
+    console.log(userInfo);
   }
 
   return (
@@ -98,6 +105,20 @@ export default function ({ navigation }) {
       >
         <Text style={styles.loginButtonText}>
           {isLoading ? 'LOGGING IN...' : 'LOGIN'}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Login Button */}
+      <TouchableOpacity 
+        style={[
+          styles.loginButton,
+          // isLoading && styles.disabledButton
+        ]} 
+        onPress={handleGoogleLogin}
+        // disabled={isLoading}
+      >
+        <Text style={styles.loginButtonText}>
+          {GOOGLE}
         </Text>
       </TouchableOpacity>
 
